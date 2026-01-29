@@ -1,0 +1,5 @@
+{
+  "name": "Oeteldonk Confetti Mapper",
+  "description": "A high-performance confetti physics simulator for projection mapping. Define obstacles on your wall, simulate realistic fluttering confetti (Red, White, Yellow), and export recordings with alpha transparency.",
+  "requestFramePermissions": []
+}
