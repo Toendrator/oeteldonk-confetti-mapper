@@ -1,4 +1,3 @@
-
 // oeteldonk-confetti-mapper/components/Simulator.tsx
 
 import React, { useRef, useEffect, useState } from 'react';
@@ -64,6 +63,8 @@ interface ConfettiBody extends Matter.Body {
     createdAt: number;
     staticSince?: number;
     area: number; // Precomputed aero area
+    renderWidth: number;  // ADDED: Original unrotated width
+    renderHeight: number; // ADDED: Original unrotated height
 }
 
 const Simulator: React.FC<SimulatorProps> = ({ 
@@ -220,6 +221,8 @@ const Simulator: React.FC<SimulatorProps> = ({
             
             p.area = (w * h) / 100; // Normalized area factor
             p.createdAt = frame;
+            p.renderWidth = w;   // FIXED: Store original width
+            p.renderHeight = h;  // FIXED: Store original height
             
             Composite.add(engine.world, p);
             activeParticles.current.add(p);
@@ -336,8 +339,8 @@ const Simulator: React.FC<SimulatorProps> = ({
                      // Bake it!
                      bakedParticles.current.push({
                          x: b.position.x, y: b.position.y, angle: b.angle,
-                         w: (b.bounds.max.x - b.bounds.min.x), // approx
-                         h: (b.bounds.max.y - b.bounds.min.y),
+                         w: b.renderWidth,  // FIXED: Use stored width
+                         h: b.renderHeight, // FIXED: Use stored height
                          color: b.render.fillStyle as string,
                          opacity: b.render.opacity
                      });
@@ -379,9 +382,9 @@ const Simulator: React.FC<SimulatorProps> = ({
           ctx.rotate(b.angle);
           ctx.fillStyle = b.render.fillStyle as string;
           ctx.globalAlpha = b.render.opacity;
-          // Use bounds for simple drawing (faster than vertices for thousands)
-          const w = (b.bounds.max.x - b.bounds.min.x); 
-          const h = (b.bounds.max.y - b.bounds.min.y);
+          // FIXED: Use stored dimensions instead of calculating from bounds
+          const w = b.renderWidth; 
+          const h = b.renderHeight;
           ctx.fillRect(-w/2, -h/2, w, h);
           ctx.restore();
       });
